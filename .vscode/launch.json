@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PomodoApplication<pomodo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.pomodo.pomodo.PomodoApplication",
+            "projectName": "pomodo",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
