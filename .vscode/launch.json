@@ -9,6 +9,16 @@
             "projectName": "pomodo",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PomodoApplication<pomodo-api>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.pomodo.pomodo.PomodoApplication",
+            "projectName": "pomodo-api",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

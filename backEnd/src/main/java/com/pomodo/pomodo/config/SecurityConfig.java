@@ -45,21 +45,19 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // !! IMPORTANT: Update this with your React app's URL !!
-        // This is typically http://localhost:5173 for Vite or http://localhost:3000 for
-        // Create React App
+
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
 
-        // Allow all common methods
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // Allow all headers
+
         configuration.setAllowedHeaders(List.of("*"));
 
-        // Allow credentials (like cookies, if you use them later)
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Apply this CORS configuration to all paths
+
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
