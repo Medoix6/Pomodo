@@ -8,15 +8,30 @@ async function handleRes(res: Response) {
   return res.json();
 }
 
+function getHeaders() {
+  const token = localStorage.getItem('token');
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 export async function fetchJSON(path: string) {
-  const res = await fetch(`${API_BASE}${path}`);
+  const token = localStorage.getItem('token');
+  const headers: HeadersInit = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE}${path}`, { headers });
   return handleRes(res);
 }
 
 export async function postJSON(path: string, body: any) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
     body: JSON.stringify(body),
   });
   return handleRes(res);
@@ -25,14 +40,21 @@ export async function postJSON(path: string, body: any) {
 export async function putJSON(path: string, body: any) {
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getHeaders(),
     body: JSON.stringify(body),
   });
   return handleRes(res);
 }
 
 export async function deleteJSON(path: string) {
-  const res = await fetch(`${API_BASE}${path}`, { method: 'DELETE' });
+  const token = localStorage.getItem('token');
+  const headers: HeadersInit = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'DELETE',
+    headers
+  });
   if (!res.ok && res.status !== 204) throw new Error(`Delete failed: ${res.status}`);
   return null;
 }

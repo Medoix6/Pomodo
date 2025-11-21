@@ -1,7 +1,6 @@
 package com.pomodo.pomodo.model;
 
 import jakarta.persistence.*;
-import java.time.Instant;
 
 @Entity
 @Table(name = "tasks")

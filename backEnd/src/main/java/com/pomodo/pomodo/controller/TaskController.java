@@ -51,7 +51,6 @@ public class TaskController {
     public ResponseEntity<TaskDto> update(@PathVariable String id, @RequestBody TaskDto updates) {
         return taskRepository.findById(id)
                 .map(existing -> {
-                    // apply updates
                     if (updates.getTitle() != null)
                         existing.setTitle(updates.getTitle());
                     existing.setCompleted(updates.isCompleted());

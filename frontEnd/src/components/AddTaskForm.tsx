@@ -15,7 +15,7 @@ import {
 interface AddTaskFormProps {
   onAdd: (title: string, priority: Priority, note: string, categoryId: string) => void;
   categories: Category[];
-  onAddCategory: (name: string, color: string) => Category;
+  onAddCategory: (name: string, color: string) => Promise<Category> | Category;
 }
 
 export const AddTaskForm = ({ onAdd, categories, onAddCategory }: AddTaskFormProps) => {
@@ -36,9 +36,9 @@ export const AddTaskForm = ({ onAdd, categories, onAddCategory }: AddTaskFormPro
     setNote('');
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
-    
+
     const colors = [
       'hsl(var(--primary))',
       'hsl(var(--secondary))',
@@ -47,8 +47,8 @@ export const AddTaskForm = ({ onAdd, categories, onAddCategory }: AddTaskFormPro
       'hsl(280, 100%, 60%)',
     ];
     const color = colors[Math.floor(Math.random() * colors.length)];
-    
-    const newCategory = onAddCategory(newCategoryName, color);
+
+    const newCategory = await onAddCategory(newCategoryName, color);
     setCategoryId(newCategory.id);
     setNewCategoryName('');
     setShowNewCategory(false);
@@ -89,7 +89,7 @@ export const AddTaskForm = ({ onAdd, categories, onAddCategory }: AddTaskFormPro
             <Plus className="h-4 w-4" />
           </Button>
         </div>
-        
+
         {showNewCategory && (
           <div className="flex gap-2">
             <Input

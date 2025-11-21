@@ -4,42 +4,51 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner'; // Changed to sonner as used in Login.tsx plan
 
 const Auth = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Simple local storage based auth simulation
-    if (isSignUp) {
-      localStorage.setItem('pomodo-user', JSON.stringify({ email, name }));
-      toast({
-        title: "Account created!",
-        description: "Welcome to Pomodo",
+    setIsLoading(true);
+
+    try {
+      const endpoint = isSignUp ? '/auth/register' : '/auth/login';
+      const body = isSignUp
+        ? { username, email, password }
+        : { username, password };
+
+      const response = await fetch(`http://localhost:8080${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       });
-    } else {
-      const user = localStorage.getItem('pomodo-user');
-      if (!user) {
-        toast({
-          title: "No account found",
-          description: "Please sign up first",
-          variant: "destructive",
-        });
-        return;
+
+      if (!response.ok) {
+        throw new Error('Authentication failed');
       }
-      toast({
-        title: "Welcome back!",
-        description: "Logged in successfully",
-      });
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('username', username);
+      localStorage.setItem('email', email);
+
+      toast.success(isSignUp ? "Account created!" : "Welcome back!");
+      navigate('/app');
+    } catch (error) {
+      console.error("Auth error:", error);
+      toast.error("Authentication failed. Please check your credentials.");
+    } finally {
+      setIsLoading(false);
     }
-    
-    navigate('/app');
   };
 
   return (
@@ -53,34 +62,34 @@ const Auth = () => {
             {isSignUp ? 'Create your account to start focusing' : 'Welcome back! Sign in to continue'}
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
             {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="name"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
             )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -94,8 +103,8 @@ const Auth = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full" size="lg">
-              {isSignUp ? 'Create Account' : 'Sign In'}
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
             </Button>
 
             <div className="text-center pt-4">
